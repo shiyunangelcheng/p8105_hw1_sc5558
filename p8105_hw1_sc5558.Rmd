@@ -8,6 +8,8 @@ output: github_document
 ```{r}
 # packages installed in consel and load library
 library(moderndive)
+library(ggplot2)
+library(tidyverse)
 #access to data
 data("early_january_weather")
 ```
@@ -25,14 +27,46 @@ mean(early_january_weather$temp, na.rm = TRUE) #average temperature
 ```
 The dataset contains `r nrow(early_january_weather)` observations and `r ncol(early_january_weather)` variables. The average temperature is `r round(mean(early_january_weather$temp, na.rm = TRUE), 2)`.
 
-
 Now we create a scatteplot.
 ```{r}
 ggplot(early_january_weather, aes(x = time_hour, y = temp, color = humid)) +
   geom_point() +
   labs(title = "Temperature vs Time (colored by humidity)")
 ```
+Export and Save plot 
+```{r}
+ggsave("temp_vs_time_plot.pdf")
+```
+## Problem 2 
+Create the dataframe 
+```{r}
+set.seed(1234) #for reproducibility
 
-ggplot
+df = tibble(
+  norm_sample = rnorm(10), #random sample of size 10 of a standard normal distribution 
+  is_positive = rnorm(10) > 0, #logical vector indicating whether elements of the sample are greater than 0
+  char_vec = letters[1:10], #character vector of length 10 
+  factor_vec = factor(rep(c("low", "medium", "high", "low"), length.out = 10)) #factor vector of length 10, with 3 different factor levels 
+)
+```
+Try takiing means 
+```{r}
+mean(df %>% pull(norm_sample))      # works: numeric
+mean(df %>% pull(is_positive))      # works: logical (TRUE = 1, FALSE = 0)
+mean(df %>% pull(char_vec))         # error: can't average characters
+mean(df %>% pull(factor_vec))       # error: can't average factors
+```
+When we try to take the mean of each varialbe, the numetric variable works fine, and the logical variable also works find because R treated True as 1 and False as 0. So taking the mean gives us the proportion of the TRUEs. 
+The character varable and factor variable do not work because they are composed of letters and R cannot do math on them. 
 
+Now try turn them into numeric variables 
+```{r}
+as.numeric(df$is_positive)   # TRUE → 1, FALSE → 0
+as.numeric(df$char_vec)      # NA with warning
+as.numeric(df$factor_vec)    # Underlying integer levels
+```
+Converting logical to numeric works well (TRUE becomes 1, FALSE becomes 0).
+Converting character to numeric gives NAs, since letters can't be interpreted numerically.
+Factors convert to their underlying integer levels — useful for some analyses but potentially misleading if labels aren't ordinal.
 
+This helps explain what happens when we try to take the mean. It shows taht only numeric or logival variables can be averaged directly, for character and factor variables, we need to think before converting as the as.numeric() command does not translate them directly into numeric values.
