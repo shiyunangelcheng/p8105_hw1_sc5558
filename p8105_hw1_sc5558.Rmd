@@ -4,27 +4,35 @@ author: "Shiyun Angel Cheng"
 date: "2025-09-21"
 output: github_document
 ---
+## Problem 1 
+```{r}
+# packages installed in consel and load library
+library(moderndive)
+#access to data
+data("early_january_weather")
+```
+Describe the dataset using inline code
+```{r}
+#check for variable names in the dataset 
+names(early_january_weather)
+```
+The `early_january_weather` dataset contains the following variables: `r paste(names(early_january_weather), collapse = ", ")`. Some important variables include `temp` (temperature in Fahrenheit), `humid` (humidity level), and `time_hour` (timestamp).
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r}
+nrow(early_january_weather) #number of rows
+ncol(early_january_weather) #number of columns 
+mean(early_january_weather$temp, na.rm = TRUE) #average temperature
+```
+The dataset contains `r nrow(early_january_weather)` observations and `r ncol(early_january_weather)` variables. The average temperature is `r round(mean(early_january_weather$temp, na.rm = TRUE), 2)`.
+
+
+Now we create a scatteplot.
+```{r}
+ggplot(early_january_weather, aes(x = time_hour, y = temp, color = humid)) +
+  geom_point() +
+  labs(title = "Temperature vs Time (colored by humidity)")
 ```
 
-## R Markdown
+ggplot
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
-```
-
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
